@@ -1,0 +1,62 @@
+version: "3.9"
+
+services:
+  api:
+    build: ./apps/api
+    command: pnpm run start:dev
+    ports:
+      - "3000:3000"
+    env_file: .env
+    depends_on:
+      - mongo
+      - redis
+    volumes:
+      - ./apps/api:/usr/src/app
+    networks:
+      - claynet
+
+  worker:
+    build: ./apps/worker
+    command: pnpm run start:dev
+    env_file: .env
+    depends_on:
+      - redis
+      - mongo
+    volumes:
+      - ./apps/worker:/usr/src/app
+    networks:
+      - claynet
+
+  web:
+    build: ./apps/web
+    command: pnpm run dev
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./apps/web:/usr/src/app
+    networks:
+      - claynet
+
+  mongo:
+    image: mongo:6
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - claynet
+
+  redis:
+    image: redis:7
+    restart: always
+    ports:
+      - "6379:6379"
+    networks:
+      - claynet
+
+volumes:
+  mongo_data:
+
+networks:
+  claynet:
