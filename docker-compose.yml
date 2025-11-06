@@ -1,60 +1,44 @@
 services:
-  api:
-    build: ./apps/api
-    command: pnpm run start:dev
-    ports:
-      - "3000:3000"
-    env_file: .env
-    depends_on:
-      - mongo
-      - redis
-    volumes:
-      - ./apps/api:/usr/src/app
-    networks:
-      - claynet
-
-  worker:
-    build: ./apps/worker
-    command: pnpm run start:dev
-    env_file: .env
-    depends_on:
-      - redis
-      - mongo
-    volumes:
-      - ./apps/worker:/usr/src/app
-    networks:
-      - claynet
-
-  web:
-    build: ./apps/web
-    command: pnpm run dev
-    ports:
-      - "5173:5173"
-    volumes:
-      - ./apps/web:/usr/src/app
-    networks:
-      - claynet
-
   mongo:
-    image: mongo:6
+    image: mongo:7
     restart: always
     ports:
       - "27017:27017"
     volumes:
       - mongo_data:/data/db
-    networks:
-      - claynet
 
   redis:
     image: redis:7
     restart: always
     ports:
       - "6379:6379"
-    networks:
-      - claynet
+
+  api:
+    build:
+      context: .
+      dockerfile: ./apps/api/Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - REDIS_URL=redis://redis:6379
+      - MONGO_URL=mongodb://mongo:27017/clay
+    depends_on:
+      - mongo
+      - redis
+
+  worker:
+    build:
+      context: .
+      dockerfile: ./apps/worker/Dockerfile
+    environment:
+      - NODE_ENV=production
+      - REDIS_URL=redis://redis:6379
+      - MONGO_URL=mongodb://mongo:27017/clay
+    depends_on:
+      - mongo
+      - redis
 
 volumes:
   mongo_data:
-
-networks:
-  claynet:
