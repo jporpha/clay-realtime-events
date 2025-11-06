@@ -1,6 +1,10 @@
+# =========================
+# Clay Realtime Events
+# =========================
+
 # Node dependencies
 node_modules/
-pnpm-lock.yaml
+.pnpm-store/
 
 # Build outputs
 dist/
@@ -26,22 +30,41 @@ logs/
 .DS_Store
 Thumbs.db
 
-# System
+# Temporary and system files
 *.swp
 *.swo
 *~
-
-# Docker
-docker-compose.override.yml
-docker-compose.local.yml
-
-# Temporary files
 tmp/
 temp/
-
-# OS files
 ehthumbs.db
 desktop.ini
 
 # TypeScript
 *.tsbuildinfo
+
+# Docker
+docker-compose.override.yml
+docker-compose.local.yml
+**/Dockerfile~
+**/Dockerfile.tmp
+docker-data/
+mongo_data/
+redis_data/
+
+# Frontend (Vite)
+apps/web/node_modules/
+apps/web/dist/
+apps/web/.vite/
+apps/web/.env.local
+
+# Workspace cache
+.pnpm-debug.log
+.pnpm-lock.yaml
+
+# OS-specific junk
+Icon?
+__MACOSX/
+
+# Misc
+*.bak
+*.old

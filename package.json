@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev:all": "concurrently -n API,WORKER,WEB -c green,blue,magenta \"pnpm --filter api dev\" \"pnpm --filter worker dev\" \"pnpm --filter web dev\""
   },
   "keywords": [],
   "author": "",
@@ -22,6 +23,7 @@
   "devDependencies": {
     "@types/express": "^5.0.5",
     "@types/node": "^24.10.0",
+    "concurrently": "^9.2.1",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.9.3"
   }
