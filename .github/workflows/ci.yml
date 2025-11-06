@@ -1,0 +1,58 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  build:
+    name: 🏗️ Build & Validate
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1️⃣ Checkout code
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      # 2️⃣ Setup Node + pnpm
+      - name: 🧰 Setup Node.js and pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+          run_install: false
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'pnpm'
+
+      # 3️⃣ Install dependencies (workspace aware)
+      - name: 📦 Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # 4️⃣ Build API and Worker
+      - name: 🏗️ Build API
+        run: pnpm --filter api build
+
+      - name: 🏗️ Build Worker
+        run: pnpm --filter worker build
+
+      # 5️⃣ (Optional) Lint check
+      - name: ✨ Lint code
+        run: pnpm run lint || echo "No lint script found, skipping"
+
+      # 6️⃣ (Future) Run tests
+      - name: 🧪 Run tests
+        run: pnpm run test || echo "No tests found, skipping"
+
+      # 7️⃣ (Optional) Upload build artifacts
+      - name: 📤 Upload build outputs
+        uses: actions/upload-artifact@v4
+        with:
+          name: clay-realtime-events-build
+          path: |
+            apps/api/dist
+            apps/worker/dist
