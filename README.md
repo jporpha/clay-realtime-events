@@ -1,180 +1,238 @@
+# Clay Realtime Events – Tech Challenge Solution
 
-# Clay Realtime Events
+## 🧩 Overview
 
-A full‑stack real‑time events processing system built with **Node.js**, **Redis**, **MongoDB**, and **React (Vite + TypeScript)**.  
-This project was developed as a technical challenge for the Tech Lead position at **Clay**.
-
----
-
-## 🚀 Overview
-
-The system ingests events through an HTTP API, processes them asynchronously via a Redis queue (BullMQ), stores them in MongoDB, and displays them in a live dashboard built with React using Server‑Sent Events (SSE).
-
-**Stack summary:**
-
-| Layer | Tech |
-|-------|------|
-| API | Node.js + Express + Zod |
-| Worker | BullMQ + Redis + Mongoose |
-| Database | MongoDB |
-| Frontend | React + Vite + TypeScript + Recharts |
-| Infrastructure | Docker Compose |
-| Dev tools | pnpm + concurrently + eslint + prettier |
+This repository implements a **real‑time event ingestion platform** for Clay's technical challenge.  
+It demonstrates scalable event processing using **Node.js, TypeScript, Express, MongoDB, Redis, and React** — following SOLID principles, clean architecture, and best practices for maintainability.
 
 ---
 
-## 📂 Project Structure
+## 🏗️ Monorepo Structure
 
 ```
 clay-realtime-events/
-│
 ├── apps/
-│   ├── api/            → Express REST API for event ingestion and queries
-│   ├── worker/         → Background processor (BullMQ)
-│   └── web/            → React + Vite dashboard (metrics, stream, event list)
-│
+│   ├── api/            # Express API (REST + Metrics + Stream)
+│   ├── worker/         # BullMQ Worker for event ingestion
+│   └── web/            # React dashboard (metrics + events)
 ├── packages/
-│   └── shared/         → Shared DTOs and schemas (Zod)
-│
-├── docker-compose.yml  → MongoDB + Redis + network
-└── README.md
+│   └── shared/         # DTOs, alert services, utilities
+├── docker-compose.yml  # Services: MongoDB + Redis
+├── .env.example        # Example environment configuration
+├── README.md           # Documentation (this file)
+└── pnpm-workspace.yaml
 ```
 
 ---
 
-## 🧠 Architecture Flow
+## ⚙️ Technologies
 
-1. **Event ingestion:** Clients send events to `/events` via POST.
-2. **Queueing:** Events are validated and added to Redis (`eventsQueue`).
-3. **Processing:** The worker consumes events and stores them in MongoDB.
-4. **Analytics:** `/metrics` aggregates events from the last 60s.
-5. **Streaming:** `/stream` pushes live updates using Server‑Sent Events (SSE).
-6. **Dashboard:** React frontend displays metrics, recent events, and live feed.
+- **Backend:** Node.js + TypeScript + Express  
+- **Queue Processing:** BullMQ + Redis  
+- **Database:** MongoDB (Mongoose ODM)  
+- **Frontend:** React + Vite + TypeScript + Recharts  
+- **Testing:** Jest + ts-jest  
+- **Dev Tools:** PNPM, ESLint, Docker, GitHub Actions  
+- **Alerting (Bonus):** Slack webhook + SMTP (fallback to console)  
 
 ---
 
-## ⚙️ Setup & Installation
+## 🚀 Quick Start
 
-### Prerequisites
-- Node.js ≥ 18
-- pnpm ≥ 9
-- Docker Desktop running (for Mongo + Redis)
-
-### 1. Clone the repo
+### 1️⃣ Clone & Install
 ```bash
 git clone https://github.com/jporpha/clay-realtime-events.git
 cd clay-realtime-events
-```
-
-### 2. Install dependencies
-```bash
 pnpm install
 ```
 
-### 3. Start Docker services
+### 2️⃣ Environment Variables
+Copy `.env.example` to `.env` and fill with your local values:
+
+```
+MONGO_URI=mongodb://localhost:27017/clay-events
+REDIS_HOST=localhost
+REDIS_PORT=6379
+SLACK_WEBHOOK_URL=
+SMTP_HOST=
+SMTP_PORT=
+SMTP_USER=
+SMTP_PASS=
+ALERT_EMAIL_TO=
+```
+
+### 3️⃣ Start Services (Mongo + Redis)
 ```bash
 docker compose up -d mongo redis
 ```
 
-### 4. Run all apps
+### 4️⃣ Run the system
 ```bash
-pnpm run dev:all
+pnpm run dev
+```
+That runs **API**, **Worker**, and **Web** simultaneously using `concurrently`.
+
+Then visit:  
+🔗 http://localhost:5173
+
+---
+
+## 🧠 Architecture Diagram
+
+```
+        ┌─────────────┐
+        │   React UI  │
+        └──────┬──────┘
+               │ REST / Stream
+               ▼
+        ┌─────────────┐
+        │   API (Express)
+        │  /events /metrics /stream
+        └──────┬──────┘
+               │ BullMQ Queue
+               ▼
+        ┌─────────────┐
+        │   Worker (BullMQ)
+        │   Validates + Persists
+        └──────┬──────┘
+               │ MongoDB
+               ▼
+        ┌─────────────┐
+        │   Database  │
+        └─────────────┘
 ```
 
-### 5. Access the dashboard
-Frontend: http://localhost:5173  
-API: http://localhost:3000
-
 ---
 
-## 🧩 API Endpoints
+## 🔔 Alerts System (Bonus)
 
-| Method | Endpoint | Description |
-|---------|-----------|-------------|
-| POST | `/events` | Ingest new event |
-| GET | `/events` | List events (filters by type, range, limit) |
-| GET | `/metrics` | Metrics for the last 60s |
-| GET | `/stream` | SSE stream for live updates |
+The shared package `alert.service.ts` defines an extensible system to send alerts through:
+- **Slack Webhook** (if configured)
+- **SMTP email** (if configured)
+- Otherwise logs to console ✅
 
-### Example request
-```bash
-curl -X POST http://localhost:3000/events -H "Content-Type: application/json" -d '{"eventType":"login","userId":"123","timestamp":1730912345,"metadata":{"device":"mobile"}}'
+```ts
+await sendSystemAlert('Database connection failed');
 ```
 
-The API normalizes timestamps automatically to milliseconds.
+If neither Slack nor Mail are configured, the system prints the message safely without interrupting execution.
 
 ---
 
-## 💻 Frontend Overview
+## 🧪 Testing & Reliability
 
-The **React + Vite** dashboard includes:
+All unit tests were implemented with **Jest + ts‑jest**, covering DTOs, controllers, alerts and environment sanity.
 
-- **MetricsPanel:** Recharts graph of event counts by type (auto‑refresh 5s)
-- **LivePanel:** Real‑time SSE feed of most recent events
-- **EventsTable:** Paginated view of stored events
+### 🧱 File structure
+```
+packages/shared/src/dto/event.dto.test.ts
+packages/shared/src/alerts/alert.service.test.ts
+apps/api/src/controllers/event.controller.test.ts
+packages/shared/src/test-sanity.test.ts
+```
 
-All components use isolated hooks (`useEventsStream`, etc.) and TypeScript types for safety.
+### ▶ Run tests
+```bash
+pnpm run test
+```
 
----
+### ✅ Latest Test Results
+```
+ PASS  packages/shared/src/test-sanity.test.ts
+  Sanity check
+    √ runs Jest correctly (8 ms)
 
-## 🧪 Development Details
+ PASS  packages/shared/src/dto/event.dto.test.ts
+  EventDtoSchema
+    √ accepts valid event (15 ms)
+    √ rejects invalid event (12 ms)
 
-### Scripts
-| Command | Description |
-|----------|-------------|
-| `pnpm run dev` | Run API, Worker, or Web individually |
-| `pnpm run dev:all` | Run all 3 concurrently |
-| `docker compose up -d` | Start Mongo + Redis |
-| `docker compose down` | Stop containers |
+ PASS  packages/shared/src/alerts/alert.service.test.ts
+  sendSystemAlert
+    √ should run without throwing when no transports are configured (16 ms)
+    √ should handle Error objects gracefully (1 ms)
 
-### Installed libraries (main)
-**Backend**
-- express
-- mongoose
-- bullmq
-- redis
-- zod
-- dotenv
-- cors
-- ts-node-dev
+ PASS  apps/api/src/controllers/event.controller.test.ts
+  POST /events
+    √ should accept a valid event and return 202 (65 ms)
+    √ should reject invalid event (11 ms)
 
-**Frontend**
-- react, react-dom
-- vite, typescript
-- axios
-- date-fns
-- recharts
+Test Suites: 4 passed, 4 total
+Tests:       7 passed, 7 total
+Snapshots:   0 total
+Time:        3.04 s
+Ran all test suites.
+```
 
-**Dev tools**
-- concurrently
-- @types/node, @types/express, @types/cors
-
----
-
-## 🧱 Design Principles
-
-- ✅ **SOLID & Clean Code:** Each module with single responsibility (API routes, controllers, models, services).
-- ✅ **DTO validation:** Shared schemas via Zod.
-- ✅ **Queue‑based scalability:** Redis + BullMQ decouple ingestion and persistence.
-- ✅ **Reactive UI:** SSE for true real‑time visualization.
-- ✅ **Dockerized environment:** Reproducible local setup.
-- ✅ **Type‑safe front and back:** Full TypeScript across layers.
+All components behave as expected even with missing environment variables.
 
 ---
 
-## 🧩 Future Improvements
+## 🧰 Docker & Deployment
 
-- Authentication & multi‑tenant event tracking  
-- Historical metrics persistence  
-- Real‑time WebSocket alternative (optional)  
-- CI/CD with GitHub Actions  
-- Cloud deploy (Render, Railway, or AWS ECS)  
+### 🐳 Docker Compose
+Build and run all components (Mongo + Redis + API + Worker + Web):
+
+```bash
+docker compose up --build
+```
+
+### ☁️ Deploy Targets
+Ready for deployment on:
+- **Render / Railway / AWS ECS / GCP Cloud Run / Vercel**
+- SSL supported via Nginx proxy or hosting provider
 
 ---
 
-## ✨ Author
+## 🧩 CI/CD (optional setup)
+
+A sample GitHub Action can be used for CI:
+
+```yaml
+name: Node CI
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 9
+      - run: pnpm install
+      - run: pnpm run test
+```
+
+---
+
+## 📦 Deliverables Summary
+
+✅ Express + TypeScript API  
+✅ Worker (BullMQ + Redis)  
+✅ MongoDB persistence  
+✅ React dashboard with metrics & stream  
+✅ Dockerized environment  
+✅ CI/CD ready  
+✅ Alerts via Slack/Email fallback  
+✅ Jest unit tests (4 suites, 7 tests, 100% passing)  
+✅ Comprehensive README + architecture diagram
+
+---
+
+## 🧠 Author
+
 **Juan Pablo Orphanopoulos (JP Orpha)**  
-Full‑stack Engineer · Tech Lead candidate for Clay  
-📧 jporpha@gmail.com
+💻 Software Engineer | 🎶 Music Producer  
+🇨🇱 Santiago, Chile  
+GitHub: [@jporpha](https://github.com/jporpha)
+
+
+## 🧱 Autor
+
+**Juan Pablo Orphanopoulos (JP Orpha)**  
+Back End Engineer & Tech Lead  
+🎵 También conocido como [JP Orpha](https://open.spotify.com/artist/4uYAkR5V3zWZACqkOMxG1H)
 
 ---

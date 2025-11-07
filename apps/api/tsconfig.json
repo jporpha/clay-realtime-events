@@ -1,30 +1,20 @@
 {
+  "extends": "../../tsconfig.json",
   "compilerOptions": {
-    /* Output */
     "outDir": "./dist",
     "rootDir": "../../",
     "sourceMap": true,
 
-    /* Module resolution */
-    "target": "ES2020",
-    "module": "commonjs",
     "moduleResolution": "node",
-    "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
 
-    /* Type checking */
-    "strict": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-
-    /* Imports */
-    "baseUrl": "./src",
-
-    /* Decorators (por si en el futuro usamos NestJS o Typegoose) */
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true
   },
-  "include": ["src/**/*.ts"],
+  "include": [
+    "src/**/*.ts",
+    "../../packages/shared/**/*.ts"
+  ],
   "exclude": ["node_modules", "dist"]
 }

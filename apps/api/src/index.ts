@@ -5,6 +5,8 @@ import mongoose from 'mongoose';
 import { router as eventsRouter } from './routes/events';
 import { metricsRouter } from './routes/metrics';
 import { streamRouter } from './routes/stream';
+import { sendSystemAlert } from '@shared/alerts/alert.service';
+import { Request, Response, NextFunction } from 'express';
 
 dotenv.config();
 
@@ -20,6 +22,14 @@ mongoose
 app.use('/events', eventsRouter);
 app.use('/metrics', metricsRouter);
 app.use('/stream', streamRouter);
+
+app.use(
+  async (err: Error, req: Request, res: Response, next: NextFunction) => {
+    console.error('❌ API error:', err);
+    await sendSystemAlert(err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

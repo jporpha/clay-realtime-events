@@ -3,6 +3,7 @@ import { RedisOptions } from 'ioredis';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import { EventDtoSchema } from '../../../packages/shared/src/dto/event.dto';
+import { sendSystemAlert } from '@shared/alerts/alert.service';
 
 dotenv.config();
 
@@ -29,15 +30,25 @@ const EventModel = mongoose.model('Event', eventSchema);
 export const eventWorker = new Worker(
   'events_queue',
   async (job) => {
-    const parse = EventDtoSchema.safeParse(job.data);
-    if (!parse.success) {
-      console.error('❌ Invalid job data:', job.data);
-      return;
-    }
+    try {
+      const parse = EventDtoSchema.safeParse(job.data);
+      if (!parse.success) {
+        console.error('❌ Invalid job data:', job.data);
+        await sendSystemAlert('Invalid job data received');
+        return;
+      }
 
-    const event = parse.data;
-    await EventModel.create(event);
-    console.log(`✅ Processed event: ${event.eventType}`);
+      const event = parse.data;
+      await EventModel.create(event);
+      console.log(`✅ Processed event: ${event.eventType}`);
+    } catch (error) {
+      console.error('❌ Worker processing error:', error);
+      if (error instanceof Error) {
+        await sendSystemAlert(error);
+      } else {
+        await sendSystemAlert(String(error));
+      }
+    }
   },
   { connection: redisOptions }
 );
