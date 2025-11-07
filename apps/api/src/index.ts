@@ -7,6 +7,7 @@ import { metricsRouter } from './routes/metrics';
 import { streamRouter } from './routes/stream';
 import { sendSystemAlert } from '@shared/alerts/alert.service';
 import { Request, Response, NextFunction } from 'express';
+import { setupSwagger } from './swagger'; 
 
 dotenv.config();
 
@@ -19,6 +20,7 @@ mongoose
   .then(() => console.log('✅ Connected to MongoDB from API'))
   .catch((err) => console.error('❌ MongoDB connection error:', err));
 
+setupSwagger(app);
 app.use('/events', eventsRouter);
 app.use('/metrics', metricsRouter);
 app.use('/stream', streamRouter);
