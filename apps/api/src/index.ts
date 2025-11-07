@@ -5,7 +5,7 @@ import mongoose from 'mongoose';
 import { router as eventsRouter } from './routes/events';
 import { metricsRouter } from './routes/metrics';
 import { streamRouter } from './routes/stream';
-import { sendSystemAlert } from '@shared/alerts/alert.service';
+import { sendSystemAlert } from 'shared/alerts/alert.service';
 import { Request, Response, NextFunction } from 'express';
 import { setupSwagger } from './swagger'; 
 

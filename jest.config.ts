@@ -16,7 +16,7 @@ const config: Config = {
     '^.+\\.ts$': ['ts-jest', { tsconfig: 'tsconfig.jest.json' }],
   },
   moduleNameMapper: {
-    '^@shared/(.*)$': '<rootDir>/packages/shared/src/$1',
+    '^shared/(.*)$': '<rootDir>/packages/shared/src/$1',
   },
 };
 

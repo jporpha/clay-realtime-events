@@ -22,7 +22,7 @@ const config: Config = {
   testPathIgnorePatterns: ['/node_modules/', '/dist/', '/build/'],
   moduleNameMapper: {
     // Permitir imports absolutos si algún paquete lo usa
-    '^@shared/(.*)$': '<rootDir>/packages/shared/src/$1',
+    '^shared/(.*)$': '<rootDir>/packages/shared/src/$1',
   },
   // Limpiar cache de mocks entre tests
   resetMocks: true,
