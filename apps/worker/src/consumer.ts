@@ -3,7 +3,7 @@ import { RedisOptions } from 'ioredis';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import { EventDtoSchema } from '../../../packages/shared/src/dto/event.dto';
-import { sendSystemAlert } from 'shared/alerts/alert.service';
+import { sendSystemAlert } from '../../../packages/shared/src/alerts/alert.service';
 
 dotenv.config();
 
