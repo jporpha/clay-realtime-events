@@ -1,14 +1,16 @@
 import { Queue } from 'bullmq';
-import { RedisOptions } from 'ioredis';
+import { Redis } from 'ioredis';
 import dotenv from 'dotenv';
 
 dotenv.config();
 
-const redisOptions: RedisOptions = {
-  host: process.env.REDIS_HOST || 'localhost',
-  port: Number(process.env.REDIS_PORT) || 6379,
-};
+
+const redisConnection = new Redis(process.env.REDIS_URL || '', {
+  tls: {}, // 🔒 Upstash requiere conexión segura (SSL/TLS)
+});
 
 export const eventsQueue = new Queue('events_queue', {
-  connection: redisOptions,
+  connection: redisConnection,
 });
+
+console.log('✅ Redis connection established via Upstash');
