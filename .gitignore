@@ -8,8 +8,11 @@ node_modules/
 
 # Build outputs
 dist/
+**/dist/
 build/
+**/build/
 coverage/
+
 
 # Environment files
 .env
