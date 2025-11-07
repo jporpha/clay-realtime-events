@@ -15,6 +15,11 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+app.get('/', (req, res) => {
+  res.send('🚀 Clay Realtime Events API is running!');
+});
+
+
 mongoose
   .connect(process.env.MONGO_URI || 'mongodb://localhost:27017/clay-events')
   .then(() => console.log('✅ Connected to MongoDB from API'))
