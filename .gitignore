@@ -12,6 +12,7 @@ dist/
 build/
 **/build/
 coverage/
+apps/web/dist/
 
 
 # Environment files

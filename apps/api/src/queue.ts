@@ -6,7 +6,7 @@ dotenv.config();
 
 
 const redisConnection = new Redis(process.env.REDIS_URL || '', {
-  tls: {}, // 🔒 Upstash requiere conexión segura (SSL/TLS)
+  tls: {}, 
 });
 
 export const eventsQueue = new Queue('events_queue', {
