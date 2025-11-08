@@ -8,7 +8,7 @@ import swaggerSpec from "./config/swagger-docs";
 import { router as eventsRouter } from "./routes/events";
 import { metricsRouter } from "./routes/metrics";
 import { streamRouter } from "./routes/stream";
-import { sendSystemAlert } from "shared/alerts/alert.service";
+import { sendSystemAlert } from '../../../packages/shared/src/alerts/alert.service';
 
 dotenv.config();
 
