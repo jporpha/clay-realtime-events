@@ -8,6 +8,12 @@ importers:
 
   .:
     dependencies:
+      '@types/react':
+        specifier: ^19.2.2
+        version: 19.2.2
+      '@types/react-dom':
+        specifier: ^19.2.2
+        version: 19.2.2(@types/react@19.2.2)
       axios:
         specifier: ^1.13.2
         version: 1.13.2
@@ -32,6 +38,9 @@ importers:
       nodemailer:
         specifier: ^7.0.10
         version: 7.0.10
+      vite:
+        specifier: ^7.2.1
+        version: 7.2.1(@types/node@24.10.0)
       zod:
         specifier: ^4.1.12
         version: 4.1.12
