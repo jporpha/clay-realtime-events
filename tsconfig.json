@@ -1,28 +1,21 @@
 {
   "compilerOptions": {
-    /* Base */
-    "target": "ESNext",
-    "useDefineForClassFields": true,
-    "lib": ["DOM", "DOM.Iterable", "ESNext"],
-    "skipLibCheck": true,
+    "target": "ES2020",
+    "module": "commonjs",
     "strict": true,
-    "forceConsistentCasingInFileNames": true,
-
-    /* Modules */
-    "module": "ESNext",
-    "moduleResolution": "Node",
     "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "noEmit": true,
-
-    /* React */
-    "jsx": "react-jsx",
-
-    /* Types for Vite & Node */
-    "types": ["node", "vite/client"]
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "baseUrl": ".",
+    "paths": {
+      "shared/*": ["packages/shared/src/*"]
+    }
   },
-  "include": ["src", "vite.config.ts"],
-  "references": [{ "path": "./tsconfig.node.json" }]
+  "include": [
+    "apps/**/*",
+    "packages/**/*",
+    "**/*.test.ts",
+    "**/*.spec.ts"
+  ],
+  "exclude": ["node_modules", "dist", "build"]
 }
