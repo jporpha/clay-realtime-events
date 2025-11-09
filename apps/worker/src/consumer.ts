@@ -10,7 +10,10 @@ dotenv.config();
 const connection = new IORedis(process.env.REDIS_URL || 'redis://localhost:6379', {
   maxRetriesPerRequest: null,
   enableReadyCheck: false,
+  reconnectOnError: (err) => err.message.includes('READONLY'),
+  tls: process.env.REDIS_URL?.startsWith('rediss://') ? {} : undefined,
 });
+
 
 mongoose
   .connect(process.env.MONGO_URI || 'mongodb://localhost:27017/clay-events')
