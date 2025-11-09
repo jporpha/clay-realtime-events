@@ -6,14 +6,10 @@ dotenv.config();
 
 console.log("👷 Worker running and waiting for jobs...");
 
-// === Mini Express server to satisfy Render health check ===
-const app = express();
-
-app.get("/", (req, res) => {
-  res.send("👷 Worker is alive and processing jobs!");
-});
-
-const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => {
-  console.log(`✅ Health endpoint running on port ${PORT}`);
-});
+// Mantiene el proceso vivo para Render sin bloquear BullMQ
+if (process.env.RENDER) {
+  const app = express();
+  const PORT = process.env.PORT || 10000;
+  app.get("/", (_, res) => res.send("✅ Worker alive!"));
+  app.listen(PORT, () => console.log(`✅ Health endpoint on port ${PORT}`));
+}

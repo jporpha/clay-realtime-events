@@ -49,7 +49,7 @@ app.use((err: Error, req: any, res: any, next: any) => {
   res.status(500).json({ error: "Internal Server Error" });
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
+const PORT = Number(process.env.PORT) || 3000;
+app.listen(PORT, "0.0.0.0", () => {
   console.log(`✅ API live on port ${PORT}`);
 });
