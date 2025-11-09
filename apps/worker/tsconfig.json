@@ -1,12 +1,12 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "baseUrl": ".",
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "baseUrl": "./src",
     "paths": {
       "shared/*": ["../../packages/shared/src/*"]
     },
-    "rootDir": "src",
-    "outDir": "dist",
     "sourceMap": true,
     "target": "ES2020",
     "module": "commonjs",
