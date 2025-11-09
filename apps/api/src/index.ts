@@ -12,56 +12,59 @@ import { sendSystemAlert } from "../../../packages/shared/src/alerts/alert.servi
 
 dotenv.config();
 
-const app = express();
-app.use(cors());
-app.use(express.json());
+(async () => {
+  try {
+    const app = express();
+    app.use(cors());
+    app.use(express.json());
 
-// ====== MongoDB Connection ======
-mongoose
-  .connect(process.env.MONGO_URI || "mongodb://localhost:27017/clay-events")
-  .then(() => console.log("✅ Connected to MongoDB from API"))
-  .catch((err) => console.error("❌ MongoDB connection error:", err));
+    // ====== MongoDB Connection ======
+    await mongoose.connect(
+      process.env.MONGO_URI || "mongodb://localhost:27017/clay-events"
+    );
+    console.log("✅ Connected to MongoDB from API");
 
-// ====== Routes ======
-app.use("/events", eventsRouter);
-app.use("/metrics", metricsRouter);
-app.use("/stream", streamRouter);
+    // ====== Routes ======
+    app.use("/events", eventsRouter);
+    app.use("/metrics", metricsRouter);
+    app.use("/stream", streamRouter);
 
-// ====== Swagger Docs ======
-app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-app.get("/openapi.json", (req, res) => res.json(swaggerSpec));
+    // ====== Swagger Docs ======
+    app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+    app.get("/openapi.json", (_, res) => res.json(swaggerSpec));
 
-// ====== Serve React Frontend (static build) ======
-const webPath = path.join(__dirname, "../../web/dist");
-app.use(express.static(webPath));
+    // ====== Serve React Frontend (static build) ======
+    const webPath = path.join(__dirname, "../../web/dist");
+    app.use(express.static(webPath));
 
-// ====== React fallback route ======
-app.use((req, res, next) => {
-  if (req.accepts("html")) {
-    res.sendFile(path.join(webPath, "index.html"), (err) => {
-      if (err) next();
+    // ====== React fallback ======
+    app.use((req, res, next) => {
+      if (req.accepts("html")) {
+        res.sendFile(path.join(webPath, "index.html"), (err) => {
+          if (err) next();
+        });
+      } else {
+        next();
+      }
     });
-  } else {
-    next();
+
+    // ====== Error Handling ======
+    app.use((err: Error, req: any, res: any, next: any) => {
+      console.error("❌ Global error:", err);
+      sendSystemAlert(`API Error: ${err.message}`);
+      res.status(500).json({ error: "Internal Server Error" });
+    });
+
+    // ====== Launch background service ======
+    const PORT = Number(process.env.PORT) || 3000;
+    const HOST = "0.0.0.0";
+
+    app.listen(PORT, HOST, () => {
+      console.log(`✅ Clay API running in Background Worker mode on ${HOST}:${PORT}`);
+      console.log("🧠 Ready to receive and queue events...");
+    });
+  } catch (err) {
+    console.error("❌ API startup error:", err);
+    sendSystemAlert(`API startup error: ${(err as Error).message}`);
   }
-});
-
-// ====== Health endpoint for Render ======
-app.get("/", (_, res) => {
-  res.status(200).send("✅ Clay Realtime Events API running");
-});
-
-// ====== Global Error Handling ======
-app.use((err: Error, req: any, res: any, next: any) => {
-  console.error("❌ Global error:", err);
-  sendSystemAlert(`API Error: ${err.message}`);
-  res.status(500).json({ error: "Internal Server Error" });
-});
-
-// ====== Start Server ======
-const PORT = Number(process.env.PORT) || 3000;
-const HOST = "0.0.0.0";
-
-app.listen(PORT, HOST, () => {
-  console.log(`✅ API live on http://${HOST}:${PORT}`);
-});
+})();

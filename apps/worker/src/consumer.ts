@@ -11,10 +11,9 @@ dotenv.config();
 // ===============================
 const redisUrl = process.env.REDIS_URL || "redis://localhost:6379";
 const connection = new IORedis(redisUrl, {
-  maxRetriesPerRequest: null,          // Upstash requires this
-  enableReadyCheck: false,             // Skip 'PING' check
+  maxRetriesPerRequest: null,
+  enableReadyCheck: false,
   reconnectOnError: (err) => {
-    // Reconnect if a read-only or ECONNRESET error occurs
     const msg = err.message.toLowerCase();
     if (msg.includes("read") || msg.includes("reset")) {
       console.warn("⚠️ Redis transient error, reconnecting...");
@@ -22,9 +21,8 @@ const connection = new IORedis(redisUrl, {
     }
     return false;
   },
-  tls: redisUrl.startsWith("rediss://") ? {} : undefined, // ✅ Secure TLS
+  tls: redisUrl.startsWith("rediss://") ? {} : undefined,
   connectTimeout: 20000,
-  keepAlive: 0, // disable TCP keepalive packets
 });
 
 connection.on("connect", () => console.log("✅ Connected to Redis (Upstash)"));
@@ -44,14 +42,13 @@ mongoose
 export const eventWorker = new Worker(
   "events_queue",
   async (job) => {
-    console.log(`🪶 Processing job ${job.id}...`, job.data);
+    console.log(`🪶 Processing job ${job.id} (${job.name})`, job.data);
 
-    // Simulate your business logic here
     try {
-      // Example: send alert for demo
       await sendSystemAlert(`✅ Job processed: ${job.name}`);
+      console.log(`✅ Job ${job.id} completed successfully`);
     } catch (err) {
-      console.error("❌ Error processing job:", err);
+      console.error("❌ Error during job processing:", err);
     }
   },
   { connection }
@@ -61,4 +58,4 @@ eventWorker.on("failed", (job, err) => {
   console.error(`❌ Job ${job?.id} failed:`, err);
 });
 
-console.log("👷 Worker running and waiting for jobs...");
+console.log("👷 Worker ready and listening for jobs...");
