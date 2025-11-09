@@ -36,7 +36,7 @@ const webPath = path.join(__dirname, "../../web/dist");
 app.use(express.static(webPath));
 
 // Catch-all route for React Router
-app.all('(.*)', (req, res) => {
+app.all('/*', (req, res) => {
   res.sendFile(path.join(webPath, "index.html"));
 });
 

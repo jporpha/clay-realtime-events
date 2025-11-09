@@ -7,8 +7,10 @@ import { sendSystemAlert } from '../../../packages/shared/src/alerts/alert.servi
 
 dotenv.config();
 
-const connection = new IORedis(process.env.REDIS_URL || 'redis://localhost:6379');
-
+const connection = new IORedis(process.env.REDIS_URL || 'redis://localhost:6379', {
+  maxRetriesPerRequest: null,
+  enableReadyCheck: false,
+});
 
 mongoose
   .connect(process.env.MONGO_URI || 'mongodb://localhost:27017/clay-events')
