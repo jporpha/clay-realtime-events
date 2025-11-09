@@ -55,6 +55,11 @@ dotenv.config();
       res.status(500).json({ error: "Internal Server Error" });
     });
 
+    // ====== Health endpoint for Render ======
+    app.get("/", (_, res) => {
+      res.status(200).send("✅ Clay Realtime Events API running");
+    });
+
     // ====== Launch background service ======
     const PORT = Number(process.env.PORT) || 3000;
     const HOST = "0.0.0.0";
