@@ -1,5 +1,5 @@
 import { Worker } from 'bullmq';
-import { RedisOptions } from 'ioredis';
+import IORedis from 'ioredis';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import { EventDtoSchema } from '../../../packages/shared/src/dto/event.dto';
@@ -7,10 +7,8 @@ import { sendSystemAlert } from '../../../packages/shared/src/alerts/alert.servi
 
 dotenv.config();
 
-const redisOptions: RedisOptions = {
-  host: process.env.REDIS_HOST || 'localhost',
-  port: Number(process.env.REDIS_PORT) || 6379,
-};
+const connection = new IORedis(process.env.REDIS_URL || 'redis://localhost:6379');
+
 
 mongoose
   .connect(process.env.MONGO_URI || 'mongodb://localhost:27017/clay-events')
@@ -50,5 +48,5 @@ export const eventWorker = new Worker(
       }
     }
   },
-  { connection: redisOptions }
+  { connection }
 );
