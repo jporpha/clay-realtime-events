@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { eventsQueue } from "../queue/eventQueue"; // ✅ nombre correcto
+import { eventsQueue } from "../queue/eventQueue"; 
 import { EventDtoSchema } from "../../../../packages/shared/src/dto/event.dto";
 import { EventModel } from "../models/event.model";
 
@@ -24,7 +24,7 @@ export const createEvent = async (req: Request, res: Response) => {
 
     console.log("🧠 Received event:", event);
 
-    // Encola el evento para que lo procese el Worker
+
     await eventsQueue.add("new_event", event);
 
     console.log("📦 Event queued successfully in Redis (events_queue)");

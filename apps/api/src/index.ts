@@ -18,26 +18,21 @@ dotenv.config();
     app.use(cors());
     app.use(express.json());
 
-    // ====== MongoDB Connection ======
     await mongoose.connect(
       process.env.MONGO_URI || "mongodb://localhost:27017/clay-events"
     );
     console.log("✅ Connected to MongoDB from API");
 
-    // ====== Routes ======
     app.use("/events", eventsRouter);
     app.use("/metrics", metricsRouter);
     app.use("/stream", streamRouter);
 
-    // ====== Swagger Docs ======
     app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
     app.get("/openapi.json", (_, res) => res.json(swaggerSpec));
 
-    // ====== Serve React Frontend (static build) ======
     const webPath = path.join(__dirname, "../../web/dist");
     app.use(express.static(webPath));
 
-    // ====== React fallback ======
     app.use((req, res, next) => {
       if (req.accepts("html")) {
         res.sendFile(path.join(webPath, "index.html"), (err) => {
@@ -48,19 +43,16 @@ dotenv.config();
       }
     });
 
-    // ====== Error Handling ======
     app.use((err: Error, req: any, res: any, next: any) => {
       console.error("❌ Global error:", err);
       sendSystemAlert(`API Error: ${err.message}`);
       res.status(500).json({ error: "Internal Server Error" });
     });
 
-    // ====== Health endpoint for Render ======
     app.get("/", (_, res) => {
       res.status(200).send("✅ Clay Realtime Events API running");
     });
 
-    // ====== Launch background service ======
     const PORT = Number(process.env.PORT) || 3000;
     const HOST = "0.0.0.0";
 

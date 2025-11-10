@@ -1,7 +1,7 @@
 # Clay Realtime Events — Sistema de Ingesta y Visualización en Tiempo Real
 
 Este proyecto implementa una **plataforma completa de ingesta, procesamiento y visualización en tiempo real de eventos**, diseñada para **Clay**.  
-Integra **Node.js + Express + MongoDB + Redis + React**, con despliegue en **Render**, monitoreo, alertas y documentación **OpenAPI/Swagger**.
+Integra **Node.js + Express + MongoDB + Redis + React**, con despliegue en **Render**, monitoreo y alertas.
 
 ---
 
@@ -75,7 +75,7 @@ Esto levanta:
 - **Frontend:** https://clay-realtime-frontend.onrender.com  
 - **API:** https://clay-realtime-api.onrender.com  
 
-✅ Ventajas:
+Ventajas:
 - Despliegues independientes  
 - SSL automático  
 - Migración simple a AWS / Railway / ECS  
@@ -206,7 +206,7 @@ clay-realtime-events/
 
 ---
 
-## ✅ 13. Estado final
+## 13. Estado final
 
 | Componente | Estado |
 |-------------|---------|
@@ -220,7 +220,30 @@ clay-realtime-events/
 
 ---
 
-## 14. Autor
+## 14. Cumplimiento de Requerimientos y Puntos Bonus
+| Categoría | Estado y	Descripción | 
+|-------------|---------|
+| Ingesta de eventos	| ✅	Endpoint /events en Node.js + TypeScript, validado con DTO y esquema Zod.| 
+| Procesamiento	| ✅	Pipeline asíncrono con Redis (BullMQ) y Worker independiente.| 
+| Almacenamiento	| ✅	Persistencia optimizada en MongoDB (índices por timestamp y tipo).| 
+| Visualización en tiempo real	| ✅	Dashboard React con Server-Sent Events (SSE) y métricas.| 
+| Tests unitarios	| ✅	Implementados con Jest y Supertest.| 
+| Alertas	| ✅	Integración con Slack y soporte para envío por email (Nodemailer).| 
+| Documentación técnica	| ✅	README completo + ADR + Swagger/OpenAPI.| 
+| Contenedorización	| ✅	Docker Compose local para API, Worker, Redis y MongoDB.| 
+| Infraestructura como código	| ✅	Configuración declarativa mediante docker-compose.yml y .env.example.| 
+| CI/CD	| ✅	Despliegue automatizado en Render con build independiente por servicio.| 
+| Certificado SSL	| ✅	HTTPS activo por Render (SSL automático).| 
+| Entrega Git	| ✅	Repositorio GitHub público con historial de commits.| 
+| Modelo de datos	| ✅	Esquema de Mongoose versionado en /models/event.model.ts.| 
+
+**Resumen**
+Todos los entregables fueron completados y desplegados con éxito.
+El sistema está funcionando en entorno productivo y puede ser probado en tiempo real mediante los enlaces provistos.
+
+---
+
+## 15. Autor
 
 **Juan Pablo Orphanopoulos**  
 Software Engineer | Tech Lead  

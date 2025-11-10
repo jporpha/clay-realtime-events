@@ -1,14 +1,9 @@
 import { Request, Response } from 'express';
 import { EventModel } from '../models/event.model';
 
-/**
- * Controlador SSE para transmitir datos en tiempo real a los clientes.
- */
+
 const clients: Response[] = [];
 
-/**
- * Envía actualizaciones periódicas a todos los clientes conectados.
- */
 const broadcastUpdates = async () => {
   try {
     const total = await EventModel.countDocuments();
@@ -26,7 +21,6 @@ const broadcastUpdates = async () => {
   }
 };
 
-// Intervalo de actualización (cada 3 segundos)
 setInterval(broadcastUpdates, 3000);
 
 /**

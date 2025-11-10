@@ -6,9 +6,6 @@ import { sendSystemAlert } from "../../../packages/shared/src/alerts/alert.servi
 
 dotenv.config();
 
-// ===============================
-// 🔧 Redis connection (Upstash-safe)
-// ===============================
 const redisUrl = process.env.REDIS_URL || "redis://localhost:6379";
 const connection = new IORedis(redisUrl, {
   maxRetriesPerRequest: null,
@@ -28,17 +25,11 @@ const connection = new IORedis(redisUrl, {
 connection.on("connect", () => console.log("✅ Connected to Redis (Upstash)"));
 connection.on("error", (err) => console.error("❌ Redis connection error:", err));
 
-// ===============================
-// 🔧 Mongo connection
-// ===============================
 mongoose
   .connect(process.env.MONGO_URI || "mongodb://localhost:27017/clay-events")
   .then(() => console.log("✅ Connected to MongoDB from worker"))
   .catch((err) => console.error("❌ MongoDB connection error:", err));
 
-// ===============================
-// 📦 Event Schema & Model
-// ===============================
 const eventSchema = new mongoose.Schema({
   eventType: { type: String, required: true },
   userId: { type: String, required: true },
@@ -49,9 +40,7 @@ const eventSchema = new mongoose.Schema({
 
 const EventModel = mongoose.model("Event", eventSchema);
 
-// ===============================
-// 👷 Worker setup
-// ===============================
+
 export const eventWorker = new Worker(
   "events_queue",
   async (job) => {

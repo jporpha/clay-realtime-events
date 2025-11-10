@@ -1,7 +1,7 @@
 import request from 'supertest';
 import express from 'express';
 import { createEvent } from './event.controller';
-import { eventsQueue } from '../queue';
+import { eventsQueue } from "../queue/eventQueue"; 
 
 jest.mock('../queue', () => ({
   eventsQueue: { add: jest.fn().mockResolvedValue({}) },
@@ -18,7 +18,7 @@ describe('POST /events', () => {
       .send({
         eventType: 'test',
         userId: '42',
-        timestamp: 1730912345, // seconds, gets normalized
+        timestamp: 1730912345, 
       });
     expect(res.status).toBe(202);
     expect(eventsQueue.add).toHaveBeenCalled();

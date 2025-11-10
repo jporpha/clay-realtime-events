@@ -21,4 +21,4 @@ Clay solicitó un sistema distribuido, escalable y observable para procesar even
 
 ## Estado
 
-✅ **Aceptado** — Versión estable de entrega final.
+**Aceptado** — Versión estable de entrega final.
