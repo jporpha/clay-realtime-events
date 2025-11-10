@@ -247,5 +247,4 @@ El sistema está funcionando en entorno productivo y puede ser probado en tiempo
 
 **Juan Pablo Orphanopoulos**  
 Software Engineer | Tech Lead  
-🎵 También conocido como [JP Orpha](https://open.spotify.com/artist/4uYAkR5V3zWZACqkOMxG1H)
-
+🎵 También conocido como [JP Orpha](https://open.spotify.com/intl-es/artist/3REJn6StXyULabBENwXnhK?si=nRZRier2TdCBs_bum8R1pA)
