@@ -37,6 +37,19 @@ mongoose
   .catch((err) => console.error("❌ MongoDB connection error:", err));
 
 // ===============================
+// 📦 Event Schema & Model
+// ===============================
+const eventSchema = new mongoose.Schema({
+  eventType: { type: String, required: true },
+  userId: { type: String, required: true },
+  timestamp: { type: Number, required: true },
+  metadata: { type: Object, default: {} },
+  createdAt: { type: Date, default: Date.now },
+});
+
+const EventModel = mongoose.model("Event", eventSchema);
+
+// ===============================
 // 👷 Worker setup
 // ===============================
 export const eventWorker = new Worker(
@@ -45,7 +58,10 @@ export const eventWorker = new Worker(
     console.log(`🪶 Processing job ${job.id} (${job.name})`, job.data);
 
     try {
-      await sendSystemAlert(`✅ Job processed: ${job.name}`);
+      const saved = await EventModel.create(job.data);
+      console.log(`💾 Event saved to MongoDB with ID: ${saved._id}`);
+
+      await sendSystemAlert(`✅ Job processed and saved: ${job.name}`);
       console.log(`✅ Job ${job.id} completed successfully`);
     } catch (err) {
       console.error("❌ Error during job processing:", err);
