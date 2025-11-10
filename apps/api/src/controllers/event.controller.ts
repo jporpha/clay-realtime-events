@@ -1,7 +1,7 @@
-import { Request, Response } from 'express';
-import { eventsQueue } from '../queue';
-import { EventDtoSchema } from '../../../../packages/shared/src/dto/event.dto';
-import { EventModel } from '../models/event.model';
+import { Request, Response } from "express";
+import { eventsQueue } from "../queue/eventQueue"; // ✅ nombre correcto
+import { EventDtoSchema } from "../../../../packages/shared/src/dto/event.dto";
+import { EventModel } from "../models/event.model";
 
 /**
  * POST /events
@@ -12,21 +12,27 @@ export const createEvent = async (req: Request, res: Response) => {
     const validation = EventDtoSchema.safeParse(req.body);
     if (!validation.success) {
       return res.status(400).json({
-        error: 'Invalid event format',
+        error: "Invalid event format",
         details: validation.error.issues,
       });
     }
 
     const event = validation.data;
-    if (event.timestamp < 10_000_000_000){
+    if (event.timestamp < 10_000_000_000) {
       event.timestamp *= 1000;
     }
 
-    await eventsQueue.add('new_event', event);
+    console.log("🧠 Received event:", event);
+
+    // Encola el evento para que lo procese el Worker
+    await eventsQueue.add("new_event", event);
+
+    console.log("📦 Event queued successfully in Redis (events_queue)");
+
     res.status(202).json({ accepted: true });
   } catch (error) {
-    console.error('❌ Error en createEvent:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error("❌ Error en createEvent:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 };
 
@@ -50,7 +56,7 @@ export const getEvents = async (req: Request, res: Response) => {
 
     res.json(events);
   } catch (error) {
-    console.error('❌ Error en getEvents:', error);
-    res.status(500).json({ error: 'Failed to fetch events' });
+    console.error("❌ Error en getEvents:", error);
+    res.status(500).json({ error: "Failed to fetch events" });
   }
 };
