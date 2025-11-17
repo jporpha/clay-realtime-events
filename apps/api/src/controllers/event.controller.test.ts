@@ -3,7 +3,7 @@ import express from 'express';
 import { createEvent } from './event.controller';
 import { eventsQueue } from "../queue/eventQueue"; 
 
-jest.mock('../queue', () => ({
+jest.mock('../queue/eventQueue', () => ({
   eventsQueue: { add: jest.fn().mockResolvedValue({}) },
 }));
 
